@@ -1,11 +1,13 @@
-# DisplayName: Jolla vince/@ARCH@ (release) 1
+# DisplayName: Jolla vince/@ARCH@ (release) 0.2.23
 # KickstartType: release
+# DeviceModel: vince
+# DeviceVariant: vince
 # SuggestedImageType: fs
 # SuggestedArchitecture: armv7hl
 
-user --name nemo --groups audio,video --password nemo
 timezone --utc UTC
 keyboard us
+user --name nemo --groups audio,input,video --password nemo
 lang en_US.UTF-8
 
 ### Commands from /tmp/sandbox/usr/share/ssu/kickstart/part/default
@@ -13,8 +15,8 @@ part / --size 500 --ondisk sda --fstype=ext4
 
 ## No suitable configuration found in /tmp/sandbox/usr/share/ssu/kickstart/bootloader
 
-repo --name=adaptation-community-common-vince-@RELEASE@ --baseurl=http://repo.merproject.org/obs/nemo:/devel:/hw:/common/sailfish_latest_@ARCH@/
-repo --name=adaptation-community-vince-@RELEASE@ --baseurl=http://repo.merproject.org/obs/home:/birdzhang:/hybris-15.1/sailfish_latest_armv7hl/
+repo --name=adaptation-community-vince-@RELEASE@ --baseurl=http://repo.merproject.org/obs/nemo:/devel:/hw:/xiaomi:/vince/sailfish_latest_@ARCH@/
+repo --name=adaptation-community-common-vince-@RELEASE@ --baseurl==http://repo.merproject.org/obs/home:/birdzhang:/hybris-15.1/sailfish_latest_@ARCH@/
 repo --name=apps-@RELEASE@ --baseurl=https://releases.jolla.com/jolla-apps/@RELEASE@/@ARCH@/
 repo --name=hotfixes-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/hotfixes/@ARCH@/
 repo --name=jolla-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/jolla/@ARCH@/
@@ -22,7 +24,6 @@ repo --name=jolla-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEA
 %packages
 @Jolla Configuration vince
 %end
-
 
 %attachment
 ### Commands from /tmp/sandbox/usr/share/ssu/kickstart/attachment/vince
@@ -90,27 +91,19 @@ else
     ssu mode 4
 fi
 ### end 60_ssu
-### begin 70_sdk-domain
-
-export SSU_DOMAIN=@RNDFLAVOUR@
-
-if [ "$SSU_RELEASE_TYPE" = "release" ] && [[ "$SSU_DOMAIN" = "public-sdk" ]];
-then
-    ssu domain sailfish
-fi
-### end 70_sdk-domain
 %end
 
 %post --nochroot
 export SSU_RELEASE_TYPE=release
-### begin 01_release
-if [ -n "$IMG_NAME" ]; then
-    echo "BUILD: $IMG_NAME" >> $INSTALL_ROOT/etc/meego-release
-fi
-### end 01_release
-### begin vince
-cp $INSTALL_ROOT/etc/sailfish-release $IMG_OUT_DIR
-### end vince
+### begin 50_os-release
+(
+CUSTOMERS=$(find $INSTALL_ROOT/usr/share/ssu/features.d -name 'customer-*.ini' \
+    |xargs --no-run-if-empty sed -n 's/^name[[:space:]]*=[[:space:]]*//p')
+
+cat $INSTALL_ROOT/etc/os-release
+echo "SAILFISH_CUSTOMER=\"${CUSTOMERS//$'\n'/ }\""
+) > $IMG_OUT_DIR/os-release
+### end 50_os-release
 %end
 
 %pack
@@ -120,7 +113,7 @@ pushd $IMG_OUT_DIR
 
 DEVICE=vince
 
-VERSION_FILE=./sailfish-release
+VERSION_FILE=./os-release
 source $VERSION_FILE
 
 # Locate rootfs tar.bz2 archive.
