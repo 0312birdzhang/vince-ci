@@ -5,7 +5,9 @@
 
 jobs:
 - job: RunsInContainer
-  container: coderus/sailfishos-platform-sdk-base:3.0.3.8
+  container: sfossdk
+    image:coderus/sailfishos-platform-sdk-base:3.0.3.8
+    options:/bin/bash
   steps:
   - script: source vince.env
   - script: ./run-mic.sh 
