@@ -1,0 +1,11 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+jobs:
+- job: RunsInContainer
+  container: coderus/sailfishos-platform-sdk-base:3.0.3.8
+  steps:
+  - script: source vince.env
+  - script: ./run-mic.sh 
