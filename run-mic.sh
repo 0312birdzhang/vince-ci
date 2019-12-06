@@ -1,5 +1,5 @@
 #!/bin/sh
-cd /home/nemo/
+#cd /home/nemo/
 sudo mic create fs --arch=$PORT_ARCH \
 --tokenmap=ARCH:$PORT_ARCH,RELEASE:$RELEASE,EXTRA_NAME:$EXTRA_NAME \
 --record-pkgs=name,url \
