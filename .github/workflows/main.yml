@@ -5,14 +5,19 @@ on: [push]
 jobs:
   build:
 
-    runs-on: macos-latest
-    container:
-       image: docker://coderus/sailfishos-platform-sdk-base:3.1.0.12
+    runs-on: ubuntu-16.04
+    # container:
+    #    image: docker://coderus/sailfishos-platform-sdk-base:3.1.0.12
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-      
+    
+    - name: Prepare
+      run: |
+        sudo apt-get update && sudo apt-get -y install binfmt-support
+        
     - name: Build
+      uses: docker://coderus/sailfishos-platform-sdk-base:3.1.0.12
       run: |
         source vince.env
         ./run-mic.sh
